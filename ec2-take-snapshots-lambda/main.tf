@@ -111,11 +111,6 @@ resource "aws_lambda_function" "ec2-take-snapshots" {
   runtime = "python2.7"
   memory_size = "128"
   timeout = "10"
-
-  # delete temp zip file
-  provisioner "local-exec" {
-    command = "rm /tmp/${random_id.random_zip_filename.b64}.zip"
-  }
 }
 
 resource "aws_cloudwatch_event_rule" "ec2-take-snapshots-schedule" {
