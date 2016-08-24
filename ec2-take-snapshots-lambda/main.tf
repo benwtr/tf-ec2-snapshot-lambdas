@@ -106,7 +106,7 @@ resource "aws_lambda_function" "ec2-take-snapshots" {
   filename = "/tmp/${random_id.random_zip_filename.b64}.zip"
   function_name = "${var.name}"
   role = "${aws_iam_role.ec2-take-snapshots-role.arn}"
-  handler = "${var.name}.main"
+  handler = "ec2-take-snapshots-lambda.main"
   source_code_hash = "${base64sha256(file("/tmp/${random_id.random_zip_filename.b64}.zip"))}"
   runtime = "python2.7"
   memory_size = "128"
