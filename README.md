@@ -1,7 +1,9 @@
 # tf-ec2-snapshot-lambdas
+
 Terraform modules for @xombiemp's EC2 snapshot lambdas
 
-### Lambda functions
+
+## Lambda functions
 
 For documentation, refer to:
 
@@ -11,7 +13,9 @@ For documentation, refer to:
 The lambda functions and IAM roles embedded in these Terraform modules were copied entirely from @xombiemp's repos.
 
 
-### Terraform Usage
+## Terraform Usage
+
+### ec2-take-snapshots-lambda
 
 #### Input Variables
 
@@ -45,5 +49,33 @@ module "snapshot_jenkins_master_lambda" {
 }
 ```
 
+### ec2-purge-snapshots-lambda
 
-** Module for ec2-purge-snapshots-lambda will be added very soon **
+#### Input Variables
+
+ * `name` - (Optional) Override the default name of the lambda and associated resources to avoid duplicate resource names and provide meaningful labels
+ * `volumes` - List of volume-ids, eg `\"vol-12345678\", \"vol-87654321\"` or `\"all\"` for all volumes. Populate this or tags but not both."
+ * `tags` - Dictionary of tags to use to filter the snapshots. May specify multiple. eg `'key': 'value'` or `'key1': 'value1', 'key2': 'value2', ...`
+ * `hours` - (Required) The number of hours to keep ALL snapshots
+ * `days` - (Required) The number of days to keep ONE snapshot per day
+ * `weeks` - (Required) The number of weeks to keep ONE snapshot per week
+ * `months` - (Required) The number of months to keep ONE snapshot per month
+ * `region` - AWS region in which snapshots exist eg "us-east-1"
+ * `timezone` - The timezone in which daily snapshots will be kept at midnight eg "America/Denver", default is "UTC"
+ * `schedule_description` - eg _Run script hourly_
+ * `schedule_expression` - eg `cron(0 * * * ? *)`
+
+#### Examples
+
+In `us-west-2`, for snapshots with tag `is_backup` set to `true`, keep all snapshots for 48 hours, one every 24 hours for 30 days, one per week for 10 weeks, and one per month for 2 years:
+```
+module "ec2-purge-snapshots-lambda" {
+  source = "github.com/benwtr/tf-ec2-snapshot-lambdas//ec2-purge-snapshots-lambda"
+  tags = "'is_backup':'true'"
+  region = "us-west-2"
+  hours = "48"
+  days = "30"
+  weeks = "10"
+  months = "24"
+}
+```
