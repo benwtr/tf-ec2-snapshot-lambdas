@@ -114,6 +114,7 @@ resource "aws_lambda_function" "ec2-take-snapshots" {
   runtime = "python2.7"
   memory_size = "128"
   timeout = "10"
+  depends_on = ["archive_file.ec2-take-snapshots-lambda-script-zip"]
 }
 
 resource "aws_cloudwatch_event_rule" "ec2-take-snapshots-schedule" {
