@@ -43,11 +43,14 @@ data "template_file" "ec2-take-snapshots-lambda-script" {
 
 resource "random_id" "random_zip_filename" {
   byte_length = 16
+  keepers = {
+    lambda-script = "${data.template_file.ec2-take-snapshots-lambda-script.rendered}"
+  }
 }
 
 resource "archive_file" "ec2-take-snapshots-lambda-script-zip" {
   type = "zip"
-  source_content = "${data.template_file.ec2-take-snapshots-lambda-script.rendered}"
+  source_content = "${random_id.random_zip_filename.keepers.lambda-script}"
   source_content_filename = "ec2-take-snapshots-lambda.py"
   output_path = "/tmp/${random_id.random_zip_filename.b64}.zip"
 }
