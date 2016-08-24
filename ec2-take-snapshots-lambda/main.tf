@@ -28,7 +28,7 @@ variable "schedule_description" {
 }
 
 variable "schedule_expression" {
-  default = "cron(40 9 ? * 3-7 *)"
+  default = "cron(40 9 ? * TUE-SAT *)"
 }
 
 data "template_file" "ec2-take-snapshots-lambda-script" {
@@ -55,6 +55,25 @@ resource "archive_file" "ec2-take-snapshots-lambda-script-zip" {
 resource "aws_iam_role" "ec2-take-snapshots-role" {
   name = "${var.name}"
   assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "ec2-take-snapshots-policy" {
+  name = "${var.name}-policy"
+  role = "${aws_iam_role.ec2-take-snapshots-role.id}"
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -101,8 +120,8 @@ resource "aws_lambda_function" "ec2-take-snapshots" {
 
 resource "aws_cloudwatch_event_rule" "ec2-take-snapshots-schedule" {
   name = "${var.name}-schedule"
-  description = "${var.schedule_expression}"
-  schedule_expression = "${var.schedule_description}"
+  description = "${var.schedule_description}"
+  schedule_expression = "${var.schedule_expression}"
 }
 
 resource "aws_cloudwatch_event_target" "ec2-take-snapshots-schedule-target" {
