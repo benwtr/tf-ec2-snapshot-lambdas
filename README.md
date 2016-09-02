@@ -15,6 +15,8 @@ The lambda functions and IAM roles embedded in these Terraform modules were copi
 
 ## Terraform Usage
 
+These modules require Terraform >=0.7.1
+
 ### ec2-take-snapshots-lambda
 
 #### Input Variables
